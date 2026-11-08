@@ -183,6 +183,7 @@ mark.keyphrase{background:#ffdf82;color:#3c3216;border-radius:5px;padding:1px 3p
 .photo-answer{border-top:1px solid var(--line);background:var(--gold2);padding:12px 13px;font-size:.89rem}
 .photo-answer p{margin:.3em 0 0}
 @media(max-width:440px){.heritage-photo-grid{grid-template-columns:1fr}.heritage-photo img{height:175px}}
+.footer-ownership{margin-top:16px;padding-top:16px;border-top:1px solid var(--line);line-height:1.6}.footer-ownership a{color:var(--teal);font-weight:800;text-decoration:underline;text-underline-offset:3px}
 </style>
 </head>
 <body>
@@ -216,7 +217,6 @@ mark.keyphrase{background:#ffdf82;color:#3c3216;border-radius:5px;padding:1px 3p
    </div>
    <div class="heroArt" aria-hidden="true"><div class="bigicon">🏺</div><small>Be curious. Think like a historian.</small></div>
   </div>
-  <div class="card no-print" style="padding:15px 19px;margin-top:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong>💾 Keep your study progress safe</strong><p class="small muted">When the app stays at the same website address, stars should stay saved. You can also save a backup before an update.</p></div><div class="row wraprow"><button class="btn ghost sm" type="button" id="exportProgress">Download progress backup</button><button class="btn soft sm" type="button" id="importProgressButton">Restore a backup</button><input id="importProgressFile" type="file" accept="application/json,.json" hidden></div></div>
   <div class="grid3 statsgrid section-space">
     <div class="card stat"><div class="eyebrow">LESSONS FINISHED</div><div class="number" id="statLessons">0 / 15</div><div class="desc">15 focused lessons · Egypt and SA heritage</div><div class="progress" style="margin-top:14px"><span id="homeProgress"></span></div></div>
     <div class="card stat"><div class="eyebrow">FLASHCARDS LEARNT</div><div class="number" id="statCards">0 / 30</div><div class="desc">Tap, flip and remember</div></div>
@@ -267,7 +267,7 @@ mark.keyphrase{background:#ffdf82;color:#3c3216;border-radius:5px;padding:1px 3p
   <div id="glossCount" class="small muted" style="margin-bottom:13px"></div><div class="grid3" id="glossItems"></div>
  </section>
 </main>
-<footer class="footer"><div class="wrap"><div><span id="learnerFooter">Grade 5 CAPS History</span> · Exam on 18 November 2026<br><span class="tiny">Fifteen study lessons, flashcards, quiz missions and six unlockable practice papers.</span></div><div>🔒 Works offline · Progress stays in this browser on this device</div></div></footer>
+<footer class="footer"><div class="wrap"><div><span id="learnerFooter">Grade 5 CAPS History</span> · Exam on 18 November 2026<br><span class="tiny">Fifteen study lessons, flashcards, quiz missions and six unlockable practice papers.</span></div><div>🔒 Works offline · Progress stays in this browser on this device</div></div><div class="wrap footer-ownership">Please feel free to share but do not copy anything. This app and all its contents belong to <a href="https://wordworks-copywriting.co.za/" target="_blank" rel="noopener noreferrer">wordworks copywriting</a>.</div></footer>
 <script>
 'use strict';
 const lessons = [
@@ -3173,26 +3173,6 @@ if(data.exam&&!data.examUnlocked.includes("paper-1"))data.examUnlocked.push("pap
 
 function save(){try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}}
 const $=x=>document.getElementById(x);
-// Optional manual backup for moving between browsers or website addresses.
-$('exportProgress').addEventListener('click',()=>{
- const body={kind:'history-quest-progress',version:1,storageKey:KEY,exportedAt:new Date().toISOString(),progress:data};
- const blob=new Blob([JSON.stringify(body,null,2)],{type:'application/json'});
- const href=URL.createObjectURL(blob);
- const a=document.createElement('a');a.href=href;a.download='history-quest-progress-backup.json';
- document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),1000);
-});
-$('importProgressButton').addEventListener('click',()=>$('importProgressFile').click());
-$('importProgressFile').addEventListener('change',async e=>{
- const file=e.target.files?.[0];if(!file)return;
- try{
-  const body=JSON.parse(await file.text());
-  if(body.kind!=='history-quest-progress'||body.storageKey!==KEY||!body.progress||typeof body.progress!=='object'||Array.isArray(body.progress))throw new Error('This is not a compatible History Quest backup.');
-  if(!confirm('Restore this backup? This will replace the progress currently saved in this browser.'))return;
-  data={...data,...body.progress};save();location.reload();
- }catch(err){alert(err.message||'Could not restore the backup.');}
- finally{e.target.value='';}
-});
-
 let page='home',lessonIndex=0,flashFilter='focus',flashIndex=0,flashFlip=false,quiz=null,quizLast=[],hierarchyChoice=null,quizSettings={mode:'mixed',count:'10'},activePaperId=null;
 function esc(s){return String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));}
 // Personalise the app without resetting quizzes, stars, lessons or exam marks.
